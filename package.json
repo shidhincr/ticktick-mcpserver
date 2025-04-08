@@ -1,0 +1,49 @@
+{
+  "name": "ticktick-mcpserver",
+  "version": "0.1.0",
+  "description": "A Model Context Protocol (MCP) server for TickTick task management application",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.1.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.3"
+  },
+  "bin": {
+    "ticktick-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "ticktick",
+    "mcp",
+    "model-context-protocol",
+    "task-management",
+    "ai",
+    "assistant"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shidhincr/ticktick-mcpserver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shidhincr/ticktick-mcpserver/issues"
+  },
+  "homepage": "https://github.com/shidhincr/ticktick-mcpserver#readme"
+}

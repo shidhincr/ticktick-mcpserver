@@ -6,7 +6,7 @@ A Model Context Protocol (MCP) server implementation for TickTick, the popular t
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
 
-## 📋 Features
+## 🔋 Features
 
 - Get tasks from projects
 - Create new tasks with details like due dates, priorities, and descriptions
@@ -82,6 +82,37 @@ Follow the OAuth2 flow to obtain an access token:
 
 ## 🛠️ Available Tools
 
+### Usage with Claude Desktop
+
+This MCP server can be used with Claude desktop for enhanced task management integration. Here's how to set it up:
+
+1. **Start the MCP server**:
+   ```bash
+   npm start
+   ```
+   The server will start listening on port 3000 (or your configured port).
+
+2. **Configure Claude desktop**:
+   - Open Claude desktop application
+   - Go to Settings > AI Tools
+   - Click "Add Tool" and select "Custom Tool"
+   - Enter the following configuration:
+     - Tool Name: "TickTick"
+     - Tool Description: "Manage your TickTick tasks and projects"
+     - Base URL: `http://localhost:3000` (or your configured server URL)
+   - Save the configuration
+
+3. **Using with Claude**:
+   - In a new conversation with Claude, you can now ask to manage your TickTick tasks
+   - Example prompts:
+     - "Show me my pending tasks for today"
+     - "Create a new task for tomorrow called 'Review project proposal'"
+     - "List all my projects in TickTick"
+
+The MCP server handles the interaction between Claude and your TickTick account, allowing Claude to help you manage your tasks through natural language.
+
+### Available API Tools
+
 The server implements the following tools for AI interaction:
 
 ### Task Management
@@ -97,9 +128,9 @@ The server implements the following tools for AI interaction:
 2. **`ticktick_create_task`** - Create a new task
    ```typescript
    {
-     title: string;       // Required: Task title
+     title: string;        // Required: Task title
      content?: string;    // Optional: Task content
-     desc?: string;       // Optional: Task description
+     desc?: string;        // Optional: Task description
      project_id: string;  // Required: Project ID
      due_date?: string;   // Optional: Due date (ISO format)
      priority?: number;   // Optional: Priority (0, 1, 3, 5)
@@ -151,15 +182,15 @@ The server implements the following tools for AI interaction:
 
 ```
 ticktick-mcpserver/
-├── dist/                     # Compiled TypeScript (generated after building)
+├── dist/                      # Compiled TypeScript (generated after building)
 ├── src/
-│   └── index.ts              # Main server implementation
-├── package.json              # Project dependencies and scripts
-├── tsconfig.json             # TypeScript configuration
-└── README.md                 # Documentation
+│   └── index.ts               # Main server implementation
+├── package.json               # Project dependencies and scripts
+├── tsconfig.json              # TypeScript configuration
+└── README.md                  # Documentation
 ```
 
-## 🤝 Contributing
+## 👍 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -169,7 +200,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📚 API Reference
+## 📖 API Reference
 
 This project uses the [TickTick Open API](https://developer.ticktick.com/docs#/openapi). For detailed information about API endpoints and parameters, please refer to the official documentation.
 
@@ -177,7 +208,7 @@ This project uses the [TickTick Open API](https://developer.ticktick.com/docs#/o
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgements
+## 🌏 Acknowledgements
 
 - [TickTick](https://ticktick.com/) for providing the API
 - [Model Context Protocol (MCP)](https://github.com/anthropics/model-context-protocol-spec) for the protocol specification

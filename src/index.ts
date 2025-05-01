@@ -6,10 +6,53 @@ import {
   ListToolsRequestSchema,
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios"; // Import AxiosResponse
 
 // TickTick API base URL
 const TICKTICK_API_BASE_URL = "https://api.ticktick.com/open/v1";
+
+// Define interfaces for TickTick API objects
+interface TickTickProject {
+  id: string;
+  name: string;
+  color?: string;
+  viewMode?: string; // Assuming 'viewMode' from API, schema uses 'view_mode'
+  kind?: string;
+}
+
+interface TickTickTask {
+  id: string;
+  projectId: string;
+  title: string;
+  content?: string;
+  desc?: string;
+  dueDate?: string; // ISO format string
+  priority?: number; // 0, 1, 3, 5
+  isAllDay?: boolean;
+  // Add other potential fields if needed based on API response
+}
+
+// Define interfaces for API payloads
+interface CreateTaskPayload {
+  title: string;
+  content?: string;
+  desc?: string;
+  projectId: string;
+  isAllDay?: boolean;
+  priority?: number;
+  dueDate?: string; // ISO format string
+}
+
+interface UpdateTaskPayload {
+  id: string;
+  projectId: string;
+  title?: string;
+  content?: string;
+  desc?: string;
+  priority?: number;
+  isAllDay?: boolean;
+  dueDate?: string; // ISO format string
+}
 
 // Define tools
 const GET_TASKS_TOOL: Tool = {
@@ -340,27 +383,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new Error("Invalid arguments for ticktick_get_tasks");
       }
 
-      let tasks = [];
-      
+      let tasks: TickTickTask[] = []; // Type the tasks array
+
       if (args.project_id) {
         // Get tasks from specific project
-        const response = await axios.get(
+        const response: AxiosResponse<{ tasks?: TickTickTask[] }> = await axios.get( // Type the response
           `${TICKTICK_API_BASE_URL}/project/${args.project_id}/data`,
           { headers: getHeaders() }
         );
         tasks = response.data.tasks || [];
       } else {
         // Get all projects first
-        const projectsResponse = await axios.get(
+        const projectsResponse: AxiosResponse<TickTickProject[]> = await axios.get( // Type the response
           `${TICKTICK_API_BASE_URL}/project`,
           { headers: getHeaders() }
         );
-        
+
         // Collect tasks from all projects
-        const allTasks = [];
+        const allTasks: TickTickTask[] = []; // Type the allTasks array
         for (const project of projectsResponse.data) {
           try {
-            const projectData = await axios.get(
+            const projectData: AxiosResponse<{ tasks?: TickTickTask[] }> = await axios.get( // Type the response
               `${TICKTICK_API_BASE_URL}/project/${project.id}/data`,
               { headers: getHeaders() }
             );
@@ -380,7 +423,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       // Format tasks for output
-      const taskList = tasks.map(task => 
+      const taskList = tasks.map((task: TickTickTask) => // Type the task parameter
         `- ${task.title}${task.content ? `\n  Content: ${task.content}` : ''}${task.desc ? `\n  Description: ${task.desc}` : ''}${task.dueDate ? `\n  Due: ${task.dueDate}` : ''}${task.priority !== undefined ? `\n  Priority: ${task.priority}` : ''}`
       ).join('\n\n');
 
@@ -399,7 +442,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new Error("Invalid arguments for ticktick_create_task");
       }
 
-      const taskData = {
+      // Use the defined interface for the payload
+      const taskData: CreateTaskPayload = {
         title: args.title,
         content: args.content,
         desc: args.desc,
@@ -409,17 +453,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
 
       if (args.due_date) {
-        taskData['dueDate'] = args.due_date;
+        taskData.dueDate = args.due_date; // No error now
       }
 
       // Create task
-      const response = await axios.post(
+      const response: AxiosResponse<TickTickTask> = await axios.post( // Type the response
         `${TICKTICK_API_BASE_URL}/task`,
         taskData,
         { headers: getHeaders() }
       );
 
-      const task = response.data;
+      const task = response.data; // task is now typed as TickTickTask
 
       return {
         content: [{
@@ -437,38 +481,39 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       // First, get the current task to preserve existing fields
-      const getTaskResponse = await axios.get(
+      const getTaskResponse: AxiosResponse<TickTickTask> = await axios.get( // Type the response
         `${TICKTICK_API_BASE_URL}/project/${args.project_id}/task/${args.task_id}`,
         { headers: getHeaders() }
       );
 
-      const currentTask = getTaskResponse.data;
-      
-      // Prepare update data
-      const updateData = {
+      const currentTask = getTaskResponse.data; // currentTask is now typed as TickTickTask
+
+      // Prepare update data using the defined interface
+      const updateData: UpdateTaskPayload = {
         id: args.task_id,
         projectId: args.project_id,
-        title: args.title !== undefined ? args.title : currentTask.title,
-        content: args.content !== undefined ? args.content : currentTask.content,
-        desc: args.desc !== undefined ? args.desc : currentTask.desc,
-        priority: args.priority !== undefined ? args.priority : currentTask.priority,
-        isAllDay: args.is_all_day !== undefined ? args.is_all_day : currentTask.isAllDay,
+        // Use optional chaining or nullish coalescing for cleaner updates
+        title: args.title ?? currentTask.title,
+        content: args.content ?? currentTask.content,
+        desc: args.desc ?? currentTask.desc,
+        priority: args.priority ?? currentTask.priority,
+        isAllDay: args.is_all_day ?? currentTask.isAllDay,
       };
 
       if (args.due_date) {
-        updateData['dueDate'] = args.due_date;
+        updateData.dueDate = args.due_date; // No error now
       } else if (currentTask.dueDate) {
-        updateData['dueDate'] = currentTask.dueDate;
+        updateData.dueDate = currentTask.dueDate; // No error now
       }
 
       // Update task
-      const response = await axios.post(
-        `${TICKTICK_API_BASE_URL}/task/${args.task_id}`,
+      const response: AxiosResponse<TickTickTask> = await axios.post( // Type the response
+        `${TICKTICK_API_BASE_URL}/task/${args.task_id}`, // Note: API docs might be inconsistent, check if this endpoint is correct for updates
         updateData,
         { headers: getHeaders() }
       );
 
-      const updatedTask = response.data;
+      const updatedTask = response.data; // updatedTask is now typed as TickTickTask
 
       return {
         content: [{
@@ -529,15 +574,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       // Get projects
-      const response = await axios.get(
+      const response: AxiosResponse<TickTickProject[]> = await axios.get( // Type the response
         `${TICKTICK_API_BASE_URL}/project`,
         { headers: getHeaders() }
       );
 
-      const projects = response.data;
+      const projects = response.data; // projects is now typed as TickTickProject[]
 
       // Format projects for output
-      const projectList = projects.map(project => 
+      const projectList = projects.map((project: TickTickProject) => // Type the project parameter
         `- ${project.name} (ID: ${project.id})${project.color ? `\n  Color: ${project.color}` : ''}${project.viewMode ? `\n  View Mode: ${project.viewMode}` : ''}${project.kind ? `\n  Kind: ${project.kind}` : ''}`
       ).join('\n\n');
 
@@ -564,13 +609,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
 
       // Create project
-      const response = await axios.post(
+      const response: AxiosResponse<TickTickProject> = await axios.post( // Type the response
         `${TICKTICK_API_BASE_URL}/project`,
         projectData,
         { headers: getHeaders() }
       );
 
-      const project = response.data;
+      const project = response.data; // project is now typed as TickTickProject
 
       return {
         content: [{

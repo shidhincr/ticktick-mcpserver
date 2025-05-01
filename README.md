@@ -82,37 +82,6 @@ Follow the OAuth2 flow to obtain an access token:
 
 ## 🛠️ Available Tools
 
-### Usage with Claude Desktop
-
-This MCP server can be used with Claude desktop for enhanced task management integration. Here's how to set it up:
-
-1. **Start the MCP server**:
-   ```bash
-   npm start
-   ```
-   The server will start listening on port 3000 (or your configured port).
-
-2. **Configure Claude desktop**:
-   - Open Claude desktop application
-   - Go to Settings > AI Tools
-   - Click "Add Tool" and select "Custom Tool"
-   - Enter the following configuration:
-     - Tool Name: "TickTick"
-     - Tool Description: "Manage your TickTick tasks and projects"
-     - Base URL: `http://localhost:3000` (or your configured server URL)
-   - Save the configuration
-
-3. **Using with Claude**:
-   - In a new conversation with Claude, you can now ask to manage your TickTick tasks
-   - Example prompts:
-     - "Show me my pending tasks for today"
-     - "Create a new task for tomorrow called 'Review project proposal'"
-     - "List all my projects in TickTick"
-
-The MCP server handles the interaction between Claude and your TickTick account, allowing Claude to help you manage your tasks through natural language.
-
-### Available API Tools
-
 The server implements the following tools for AI interaction:
 
 ### Task Management

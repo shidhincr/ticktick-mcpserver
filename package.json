@@ -19,7 +19,7 @@
     "typescript": "^4.9.3"
   },
   "bin": {
-    "ticktick-mcp": "./dist/index.js"
+    "ticktick-mcp": "dist/index.js"
   },
   "files": [
     "dist",
